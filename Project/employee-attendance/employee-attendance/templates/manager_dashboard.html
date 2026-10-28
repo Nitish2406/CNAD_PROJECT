@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Manager Dashboard · Employee Attendance & Leave{% endblock %}
+
+{% block content %}
+<h4 class="fw-bold mb-1">Manager Dashboard</h4>
+<p class="text-muted mb-4">Welcome back, {{ user.name }}.</p>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card metric-card">
+      <div class="card-body">
+        <div class="text-muted small">Employees</div>
+        <div class="fs-3 fw-bold">{{ metrics.total_employees }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card metric-card">
+      <div class="card-body">
+        <div class="text-muted small">Present Today</div>
+        <div class="fs-3 fw-bold text-success">{{ metrics.present_today }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card metric-card">
+      <div class="card-body">
+        <div class="text-muted small">Pending Requests</div>
+        <div class="fs-3 fw-bold text-warning">{{ pending_count }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card metric-card">
+      <div class="card-body">
+        <div class="text-muted small">Services Healthy</div>
+        <div class="fs-3 fw-bold text-primary">{{ services_status|length }}/{{ services_status|length }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card panel-card h-100">
+      <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-3">Pending Leave Requests</h6>
+        <div id="pending-list">
+          {% for r in pending %}
+          <div class="pending-row d-flex justify-content-between align-items-center py-2 border-bottom" data-id="{{ r.id }}">
+            <div>
+              <div class="fw-semibold">{{ r.name }}</div>
+              <div class="text-muted small">{{ r.type }} Leave · {{ r.from_date }} → {{ r.to_date }}</div>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-success btn-approve" data-id="{{ r.id }}"><i class="bi bi-check-lg"></i> APPROVE</button>
+              <button class="btn btn-sm btn-outline-danger btn-reject" data-id="{{ r.id }}"><i class="bi bi-x-lg"></i> REJECT</button>
+            </div>
+          </div>
+          {% else %}
+          <div class="text-center text-muted py-4">No pending requests. 🎉</div>
+          {% endfor %}
+        </div>
+        <div id="leave-action-msg" class="small mt-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card panel-card h-100">
+      <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-3"><i class="bi bi-diagram-3"></i> Microservice Health (Demo)</h6>
+        {% for s in services_status %}
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+          <span><span class="status-dot status-present"></span> {{ s.name }}</span>
+          <span class="badge text-bg-success">{{ s.status }}</span>
+        </div>
+        {% endfor %}
+        <div class="text-muted small mt-3">
+          Demo metrics for Review 2 — will connect to real Kubernetes / Prometheus / Grafana monitoring later.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.btn-approve').forEach(btn => {
+  btn.addEventListener('click', () => AppAPI.decideLeave(btn.dataset.id, 'approve'));
+});
+document.querySelectorAll('.btn-reject').forEach(btn => {
+  btn.addEventListener('click', () => AppAPI.decideLeave(btn.dataset.id, 'reject'));
+});
+</script>
+{% endblock %}

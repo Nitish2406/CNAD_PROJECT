@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Attendance · Employee Attendance & Leave{% endblock %}
+
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="bi bi-calendar-check"></i> Attendance</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card panel-card h-100">
+      <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-3">Mark Attendance</h6>
+        <div class="d-flex gap-2 mb-3">
+          <button id="btn-check-in" class="btn btn-success flex-fill" {% if today_record and today_record.check_in %}disabled{% endif %}>
+            <i class="bi bi-box-arrow-in-right"></i> CHECK IN
+          </button>
+          <button id="btn-check-out" class="btn btn-outline-danger flex-fill" {% if not today_record or not today_record.check_in or today_record.check_out %}disabled{% endif %}>
+            <i class="bi bi-box-arrow-right"></i> CHECK OUT
+          </button>
+        </div>
+        <div id="attendance-msg" class="small"></div>
+        <div class="row text-center mt-3">
+          <div class="col">
+            <div class="text-muted small">Check In</div>
+            <div id="check-in-time" class="fw-semibold">{{ today_record.check_in if today_record and today_record.check_in else '--:--' }}</div>
+          </div>
+          <div class="col">
+            <div class="text-muted small">Check Out</div>
+            <div id="check-out-time" class="fw-semibold">{{ today_record.check_out if today_record and today_record.check_out else '--:--' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card panel-card h-100">
+      <div class="card-body text-center">
+        <h6 class="text-muted text-uppercase small mb-3">QR Check-In (Demo)</h6>
+        <div class="qr-box mx-auto mb-2">
+          <i class="bi bi-qr-code-scan"></i>
+        </div>
+        <div class="text-muted small mb-3">Scan to Check In</div>
+        <button id="btn-qr" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-phone"></i> Simulate QR Scan
+        </button>
+        <div class="text-muted small mt-2">Workflow demo for Review 2 — full QR/mobile flow is planned for the next phase.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card panel-card">
+  <div class="card-body">
+    <h6 class="text-muted text-uppercase small mb-3">Attendance History</h6>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="history-body">
+          {% for r in records %}
+          <tr>
+            <td>{{ r.date }}</td>
+            <td>{{ r.check_in or '—' }}</td>
+            <td>{{ r.check_out or '—' }}</td>
+            <td>
+              {% if r.status == 'Present' %}
+                <span class="badge text-bg-success">Present</span>
+              {% else %}
+                <span class="badge text-bg-secondary">Absent</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center text-muted py-4">No attendance records yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('btn-check-in').addEventListener('click', () => AppAPI.checkIn(true));
+document.getElementById('btn-check-out').addEventListener('click', () => AppAPI.checkOut(true));
+document.getElementById('btn-qr').addEventListener('click', () => AppAPI.checkIn(true, true));
+</script>
+{% endblock %}

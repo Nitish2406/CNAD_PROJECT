@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Employees · Employee Attendance & Leave{% endblock %}
+
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="bi bi-people-fill"></i> Employees</h4>
+
+<div class="card panel-card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Today's Check-In</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for row in employees %}
+          <tr>
+            <td class="fw-semibold">{{ row.employee.name }}</td>
+            <td class="text-muted">{{ row.employee.email }}</td>
+            <td>{{ row.check_in }}</td>
+            <td>
+              {% if row.status == 'Present' %}
+                <span class="badge text-bg-success">Present</span>
+              {% else %}
+                <span class="badge text-bg-secondary">Absent</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center text-muted py-4">No employees found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

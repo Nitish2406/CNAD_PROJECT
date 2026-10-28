@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Login · Employee Attendance & Leave{% endblock %}
+
+{% block content_nologin %}
+<div class="login-wrap d-flex align-items-center justify-content-center">
+  <div class="login-card shadow-lg">
+    <div class="text-center mb-4">
+      <i class="bi bi-cloud-check-fill display-5 text-primary"></i>
+      <h4 class="fw-bold mt-2 mb-0">Employee Attendance</h4>
+      <div class="text-muted small">&amp; Leave Management System</div>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger py-2 small">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="mb-3">
+        <label class="form-label small text-muted">Email</label>
+        <input type="email" name="email" class="form-control" placeholder="employee@demo.com" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small text-muted">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="123456" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">LOGIN</button>
+    </form>
+
+    <hr class="my-4">
+
+    <div class="small text-muted">
+      <div class="fw-semibold mb-1"><i class="bi bi-person-badge"></i> Demo accounts</div>
+      <div class="demo-account-row">
+        <span>Employee</span>
+        <code>employee@demo.com / 123456</code>
+      </div>
+      <div class="demo-account-row">
+        <span>Manager</span>
+        <code>manager@demo.com / 123456</code>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

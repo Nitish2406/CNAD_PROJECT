@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Employee Attendance & Leave{% endblock %}
+
+{% block content %}
+<h4 class="fw-bold mb-1">Welcome, {{ user.name }} 👋</h4>
+<p class="text-muted mb-4">Here's your status for today.</p>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card panel-card h-100">
+      <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-3">Today's Attendance</h6>
+
+        <div id="attendance-status" class="d-flex align-items-center gap-2 mb-3">
+          {% if today_record and today_record.status == 'Present' %}
+            <span class="status-dot status-present"></span> <span class="fw-semibold">Present</span>
+          {% else %}
+            <span class="status-dot status-absent"></span> <span class="fw-semibold">Not checked in</span>
+          {% endif %}
+        </div>
+
+        <div class="row text-center mb-3">
+          <div class="col">
+            <div class="text-muted small">Check In</div>
+            <div id="check-in-time" class="fw-semibold">{{ today_record.check_in if today_record and today_record.check_in else '--:--' }}</div>
+          </div>
+          <div class="col">
+            <div class="text-muted small">Check Out</div>
+            <div id="check-out-time" class="fw-semibold">{{ today_record.check_out if today_record and today_record.check_out else '--:--' }}</div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button id="btn-check-in" class="btn btn-success flex-fill" {% if today_record and today_record.check_in %}disabled{% endif %}>
+            <i class="bi bi-box-arrow-in-right"></i> CHECK IN
+          </button>
+          <button id="btn-check-out" class="btn btn-outline-danger flex-fill" {% if not today_record or not today_record.check_in or today_record.check_out %}disabled{% endif %}>
+            <i class="bi bi-box-arrow-right"></i> CHECK OUT
+          </button>
+        </div>
+        <div id="attendance-msg" class="small mt-2"></div>
+
+        <hr>
+        <div class="d-flex align-items-center gap-2 text-muted small">
+          <i class="bi bi-qr-code"></i> QR check-in available on the Attendance page (demo)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card panel-card h-100">
+      <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-3">Leave Balance</h6>
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+          <span><i class="bi bi-sun-fill text-warning me-2"></i>Casual Leave</span>
+          <span class="fw-bold">{{ balance.casual }} days</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center py-2">
+          <span><i class="bi bi-thermometer-half text-danger me-2"></i>Sick Leave</span>
+          <span class="fw-bold">{{ balance.sick }} days</span>
+        </div>
+        <a href="{{ url_for('leave_page') }}" class="btn btn-primary w-100 mt-3"><i class="bi bi-plus-circle"></i> APPLY FOR LEAVE</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-12">
+    <div class="card panel-card">
+      <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-3"><i class="bi bi-diagram-3"></i> System Overview</h6>
+        <div class="row g-2">
+          {% for s in [ {'name':'Employee Service'}, {'name':'Attendance Service'}, {'name':'Leave Service'}, {'name':'Notification Service'} ] %}
+          <div class="col-6 col-md-3">
+            <div class="service-chip"><span class="status-dot status-present"></span> {{ s.name }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('btn-check-in').addEventListener('click', () => AppAPI.checkIn());
+document.getElementById('btn-check-out').addEventListener('click', () => AppAPI.checkOut());
+</script>
+{% endblock %}
